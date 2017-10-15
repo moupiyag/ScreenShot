@@ -33,7 +33,6 @@ public class SceenShotUnitTest {
 	
 	@Test
     public void accountBalancesUpdatedAfterTransfer() {
-        
     }
 
 }
