@@ -5,6 +5,7 @@ package com.detectify.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -17,8 +18,12 @@ public interface ScreenShotService {
 	
 	List<File> takeScreenShots(File fileWithUrls);
 	
-	List<File> searchScreenShots(String url);
+	List<File> searchScreenShotsByUrl(String url);
 	
-	List<File> searchScreenShots(File fileWithUrls);
+	List<File> searchScreenShotsByDate(String date, String dateFormat) throws ParseException;
+	
+	List<File> searchScreenShotsByUrlAndDate(String url, String date, String dateFormat) throws ParseException;
+	
+	List<File> searchScreenShotsByDateRange(String startDate, String endDate, String dateFormat) throws ParseException;
 	
 }

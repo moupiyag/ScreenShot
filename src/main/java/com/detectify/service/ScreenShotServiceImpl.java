@@ -1,12 +1,11 @@
 package com.detectify.service;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.detectify.dao.ScreenShotDao;
+import com.detectify.util.ScreenShotUtility;
 
 
 public class ScreenShotServiceImpl implements ScreenShotService {
@@ -95,12 +95,49 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return file;
 	}
 
+
+
+	@Override
+	public List<File> searchScreenShotsByUrl(String url) {
+		
+		List<String> screenShotPaths = screenShotDao.getScreenShotPaths(url);
+		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
+		
+	}
+
+	@Override
+	public List<File> searchScreenShotsByDate(String date, String dateFormat) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+		Date requestDate = format.parse(date);
+		List<String> screenShotPaths = screenShotDao.getScreenShotPaths(requestDate);
+		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
+	}
+	
+	@Override
+	public List<File> searchScreenShotsByUrlAndDate(String url, String date, String dateFormat) throws ParseException{
+		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+		Date requestDate = format.parse(date);
+		List<String> screenShotPaths = screenShotDao.getScreenShotPaths(url, requestDate);
+		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
+	}
+
+	@Override
+	public List<File> searchScreenShotsByDateRange(String startDate, String endDate, String dateFormat)
+			throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+		Date requestStartDate = format.parse(startDate);
+		Date requestEndDate = format.parse(endDate);
+		List<String> screenShotPaths = screenShotDao.getScreenShotPaths(requestStartDate, requestEndDate);
+		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
+	}
+	
 	public List<File> takeScreenShots(File fileWithUrls) {
+		List<File> screenShots = null;
 		try(FileReader fis = new FileReader(fileWithUrls);
 			BufferedReader br = new BufferedReader(fis)) {
 			
 			final WebDriver driver = new FirefoxDriver();
-			List<File> screenShots = new ArrayList<File>();
+			screenShots = new ArrayList<File>();
 			
 			String url = null;
 			while((url = br.readLine()) != null)
@@ -113,19 +150,9 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		return null;
+		return screenShots;
 	}
 
-	public List<File> searchScreenShots(String url) {
-		
-		List<String> screenShotPaths = screenShotDao.getScreenShotPaths(url);
-		
-	}
-
-	public List<File> searchScreenShots(File fileWithUrls) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	public static void main(String args[])
 	{
