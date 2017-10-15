@@ -56,6 +56,29 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return screenShots;
 	}
 	
+	@Override
+	public List<File> takeScreenShots(File fileWithUrls) {
+		List<File> screenShots = null;
+		try(FileReader fis = new FileReader(fileWithUrls);
+			BufferedReader br = new BufferedReader(fis)) {
+			
+			final WebDriver driver = new FirefoxDriver();
+			screenShots = new ArrayList<File>();
+			
+			String url = null;
+			while((url = br.readLine()) != null)
+			{
+				screenShots.add(takeScreenshot(driver, url));
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return screenShots;
+	}
+	
 	private File takeScreenshot(WebDriver driver,String url) throws IOException
 	{
 		final File screenShot = createUniqueFile();
@@ -95,8 +118,6 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return file;
 	}
 
-
-
 	@Override
 	public List<File> searchScreenShotsByUrl(String url) {
 		
@@ -131,30 +152,9 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
 	}
 	
-	public List<File> takeScreenShots(File fileWithUrls) {
-		List<File> screenShots = null;
-		try(FileReader fis = new FileReader(fileWithUrls);
-			BufferedReader br = new BufferedReader(fis)) {
-			
-			final WebDriver driver = new FirefoxDriver();
-			screenShots = new ArrayList<File>();
-			
-			String url = null;
-			while((url = br.readLine()) != null)
-			{
-				screenShots.add(takeScreenshot(driver, url));
-			}
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		return screenShots;
-	}
 
 	
-	public static void main(String args[])
+	public static void main(String args[]) throws ParseException
 	{
 		@SuppressWarnings("resource")
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -168,6 +168,22 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 			else if("takeScreenShotByFile".equalsIgnoreCase(args[0]))
 			{
 				screenShotService.takeScreenShots(new File(args[1]));
+			}
+			else if ("searchScreenShotByUrl".equalsIgnoreCase(args[0]))
+			{
+				screenShotService.searchScreenShotsByUrl(args[1]);
+			}
+			else if ("searchScreenShotByDate".equalsIgnoreCase(args[0]))
+			{
+				screenShotService.searchScreenShotsByDate(args[1], args[2]);
+			}
+			else if ("searchScreenShotByUrlAndDate".equalsIgnoreCase(args[0]))
+			{
+				screenShotService.searchScreenShotsByUrlAndDate(args[1], args[2], args[3]);
+			}
+			else if ("searchScreenShotsByDateRange".equalsIgnoreCase(args[0]))
+			{
+				screenShotService.searchScreenShotsByDateRange(args[1], args[2], args[3]);
 			}
 		}
 		catch (IOException e) {
