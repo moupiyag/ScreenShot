@@ -48,8 +48,12 @@ public class ScreenShotServiceImpl implements ScreenShotService {
     			screenShots.add(takeScreenshot(driver,url));
     		}
     		catch(Exception e){
-    			driver.close();
     			e.printStackTrace();
+    		}
+    		finally
+    		{
+    			if(driver != null)
+    				driver.close();
     		}
 	    }
 
@@ -59,10 +63,11 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 	@Override
 	public List<File> takeScreenShots(File fileWithUrls) {
 		List<File> screenShots = null;
+		final WebDriver driver = new FirefoxDriver();
+		
 		try(FileReader fis = new FileReader(fileWithUrls);
 			BufferedReader br = new BufferedReader(fis)) {
 			
-			final WebDriver driver = new FirefoxDriver();
 			screenShots = new ArrayList<File>();
 			
 			String url = null;
@@ -75,6 +80,11 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 			e.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
+		}
+		finally
+		{
+			if(driver != null)
+				driver.close();
 		}
 		return screenShots;
 	}
