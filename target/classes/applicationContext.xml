@@ -1,0 +1,43 @@
+<beans xmlns="http://www.springframework.org/schema/beans" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xmlns:aop="http://www.springframework.org/schema/aop" 
+   xmlns:tx="http://www.springframework.org/schema/tx"
+   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+   xmlns:beans="http://www.springframework.org/schema/beans"
+   
+   xsi:schemaLocation=" 
+   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd 
+   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+   http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd">
+   
+<!--     Create dataSource bean for MySQL database connection -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/screenshotDB" />
+		<property name="username" value="root" />
+		<property name="password" value="1234" />
+	</bean>
+    
+    <!-- Create the screenShotDao bean -->
+   	<bean id="screenShotDao" class="com.detectify.dao.ScreenShotDaoImpl"> 
+      	<property name="dataSource">
+         	<ref bean="dataSource"/> 
+      	</property>
+   	</bean>
+  	
+   <!-- Create the ScreenShotService bean -->
+   <bean id="screenShotService" class="com.detectify.service.ScreenShotServiceImpl"> 
+      	<property name="screenShotDao"> 
+         	<ref bean="screenShotDao"/> 
+      	</property>
+   	</bean>
+   	
+   	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+   	
+   	<!-- Configure the transaction manager as annotation driven -->
+   	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+</beans>

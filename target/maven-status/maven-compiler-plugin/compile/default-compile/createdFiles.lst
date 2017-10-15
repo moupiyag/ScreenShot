@@ -1,0 +1,4 @@
+com\detectify\service\ScreenShotServiceImpl.class
+com\detectify\service\ScreenShotService.class
+com\detectify\dao\ScreenShotDaoImpl.class
+com\detectify\dao\ScreenShotDao.class
