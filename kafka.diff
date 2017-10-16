@@ -1,0 +1,277 @@
+commit 3a58f4bdaa678bd89a2ba38d193f2e3bcf0b41db
+Author: kghosh <kghosh@groupon.com>
+Date:   Mon Oct 16 15:02:08 2017 -0700
+
+    kafka
+
+diff --git a/pom.xml b/pom.xml
+index afb0319..42d5fad 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -165,6 +165,26 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
+ 		    <version>2.0-m05-2</version>
+ 		</dependency>
+ 
++		<dependency>
++			<groupId>org.projectlombok</groupId>
++			<artifactId>lombok</artifactId>
++			<version>1.16.10</version>
++		</dependency>
++		<dependency>
++			<groupId>org.projectlombok</groupId>
++			<artifactId>lombok</artifactId>
++			<version>1.16.10</version>
++		</dependency>
++		<dependency>
++			<groupId>com.fasterxml.jackson.datatype</groupId>
++			<artifactId>jackson-datatype-joda</artifactId>
++			<version>2.7.8</version>
++		</dependency>
++		<dependency>
++			<groupId>org.apache.commons</groupId>
++			<artifactId>commons-lang3</artifactId>
++			<version>3.4</version>
++		</dependency>
+ 	</dependencies>
+ 
+ 	<build>
+diff --git a/src/main/java/com/detectify/service/KafkaMessage.java b/src/main/java/com/detectify/service/KafkaMessage.java
+new file mode 100644
+index 0000000..d8f8710
+--- /dev/null
++++ b/src/main/java/com/detectify/service/KafkaMessage.java
+@@ -0,0 +1,14 @@
++package com.detectify.service;
++
++import lombok.Getter;
++import lombok.Setter;
++
++/**
++ * Created by moupiya on 10/16/17.
++ */
++@Getter
++@Setter
++public class KafkaMessage {
++    private String url;
++    private String uuid;
++}
+diff --git a/src/main/java/com/detectify/service/RequestConsumer.java b/src/main/java/com/detectify/service/RequestConsumer.java
+index 6a7c100..2d8f591 100644
+--- a/src/main/java/com/detectify/service/RequestConsumer.java
++++ b/src/main/java/com/detectify/service/RequestConsumer.java
+@@ -3,11 +3,14 @@
+  */
+ package com.detectify.service;
+ 
++import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.List;
++import java.util.Map;
+ import java.util.Properties;
+ 
++import com.detectify.util.Json;
+ import org.apache.kafka.clients.consumer.ConsumerRecord;
+ import org.apache.kafka.clients.consumer.ConsumerRecords;
+ import org.apache.kafka.clients.consumer.KafkaConsumer;
+@@ -17,23 +20,20 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
+  *
+  */
+ public class RequestConsumer {
+-	
+-	public void consumeRequest()
++	private static KafkaConsumer<String, Byte[]> consumer;
++
++	public static void start()
+ 	{
+-		Properties props = new Properties();
+-	     props.put("bootstrap.servers", "localhost:9092");
+-	     props.put("group.id", "test");
+-	     props.put("enable.auto.commit", "false");
+-	     props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+-	     props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+-	     KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
+-	     consumer.subscribe(Arrays.asList("test"));
+-	     final int minBatchSize = 200;
+-	     List<ConsumerRecord<String, String>> buffer = new ArrayList<ConsumerRecord<String, String>>();
+-	     while (true) {
+-	         ConsumerRecords<String, String> records = consumer.poll(100);
+-	         for (ConsumerRecord<String, String> record : records) {
+-	             buffer.add(record);
++		init();
++		final int minBatchSize = 200;
++		List<ConsumerRecord<String, String>> buffer = new ArrayList<ConsumerRecord<String, String>>();
++		while (true) {
++	         ConsumerRecords<String, Byte[]> records = consumer.poll(100);
++	         for (ConsumerRecord<String, Byte[]> record : records) {
++	 				Json json = Json.copyOf(new String(String.valueOf(record.value())));
++	            	KafkaMessage kafkaMessage = json.cast(KafkaMessage.class);
++	            	//Process kafkaMessage.getUrl();
++//	             buffer.add(record);
+ 	             System.out.println(record.value());
+ 	         }
+ 	         if (buffer.size() >= minBatchSize) {
+@@ -41,13 +41,32 @@ public class RequestConsumer {
+ 	             consumer.commitSync();
+ 	             buffer.clear();
+ 	         }
+-	     }
++		}
++	}
++
++	private static void init() {
++		if(consumer == null) {
++			Properties props = new Properties();
++			props.put("bootstrap.servers", "localhost:9092");
++			props.put("group.id", "test");
++			props.put("enable.auto.commit", "false");
++			props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
++			props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
++			consumer = new KafkaConsumer<String, String>(props);
++			consumer.subscribe(Arrays.asList("test"));
++		}
++	}
++
++	public void stop() {
++		if(consumer != null) {
++			consumer.close();
++		}
+ 	}
+ 	
+ 	public static void main(String args[])
+ 	{
+ 		RequestConsumer requestConsumer = new RequestConsumer();
+-		requestConsumer.consumeRequest();
++		requestConsumer.start();
+ 	}
+ 
+ }
+diff --git a/src/main/java/com/detectify/service/RequestProducer.java b/src/main/java/com/detectify/service/RequestProducer.java
+index 2d42182..e0cc874 100644
+--- a/src/main/java/com/detectify/service/RequestProducer.java
++++ b/src/main/java/com/detectify/service/RequestProducer.java
+@@ -4,6 +4,7 @@
+ package com.detectify.service;
+ 
+ import java.util.Properties;
++import java.util.UUID;
+ 
+ import org.apache.kafka.clients.producer.KafkaProducer;
+ import org.apache.kafka.clients.producer.Producer;
+@@ -15,7 +16,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
+  */
+ public class RequestProducer {
+ 	
+-	public void produceRequest()
++	public void produceRequest(final String url)
+ 	{
+ 		Properties props = new Properties();
+ 		 props.put("bootstrap.servers", "localhost:9092");
+@@ -27,9 +28,12 @@ public class RequestProducer {
+ 		 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+ 		 props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+ 
+-		 Producer<String, String> producer = new KafkaProducer<String, String>(props);
++		 final KafkaMessage kafkaMessage = new KafkaMessage();
++		 kafkaMessage.setUrl(url);
++		 kafkaMessage.setUuid(UUID.randomUUID().toString());
++		 Producer<String, KafkaMessage> producer = new KafkaProducer<String, KafkaMessage>(props);
+ 		 for (int i = 25; i < 30; i++)
+-		     producer.send(new ProducerRecord<String, String>("test", Integer.toString(i), Integer.toString(i)));
++		     producer.send(new ProducerRecord<String, KafkaMessage>("test",UUID.randomUUID().toString(), kafkaMessage));
+ 
+ 		 producer.close();
+ 	}
+@@ -37,8 +41,6 @@ public class RequestProducer {
+ 	public static void main(String args[])
+ 	{
+ 		RequestProducer requestProducer = new RequestProducer();
+-		requestProducer.produceRequest();
++		requestProducer.produceRequest("https://www.google.com");
+ 	}
+-	 
+-
+ }
+diff --git a/src/main/java/com/detectify/util/Json.java b/src/main/java/com/detectify/util/Json.java
+new file mode 100644
+index 0000000..ab7e4e5
+--- /dev/null
++++ b/src/main/java/com/detectify/util/Json.java
+@@ -0,0 +1,45 @@
++package com.detectify.util;
++
++import com.fasterxml.jackson.databind.ObjectMapper;
++import java.io.IOException;
++import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
++
++/**
++ * Created by ahenriquez on 10/26/16.
++ */
++
++public final class Json {
++    private static final ObjectMapper OBJECT_MAPPER = Serializer.newObjectMapper();
++    private final String string;
++
++    private Json(final String string) {
++        this.string = string;
++    }
++
++    @Override
++    public String toString() {
++        return string;
++    }
++
++    public <T> T cast(final Class<T> type) {
++        try {
++            return OBJECT_MAPPER.readValue(string, OBJECT_MAPPER.constructType(type));
++        } catch (IOException e) {
++            throw new IllegalArgumentException("cannot cast: " + string + " into instance of: " + type, e);
++        }
++    }
++
++    public static Json copyOf(final String string) {
++        return new Json(string);
++    }
++
++    public static <T> Json of(final T object) {
++        try {
++            final String string = OBJECT_MAPPER.writeValueAsString(object);
++            return new Json(string);
++        } catch (IOException e) {
++            throw new IllegalArgumentException("cannot convert " + ReflectionToStringBuilder.toString(object)
++                    + " to Json", e);
++        }
++    }
++}
+diff --git a/src/main/java/com/detectify/util/Serializer.java b/src/main/java/com/detectify/util/Serializer.java
+new file mode 100644
+index 0000000..ca5d389
+--- /dev/null
++++ b/src/main/java/com/detectify/util/Serializer.java
+@@ -0,0 +1,26 @@
++package com.detectify.util;
++
++import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
++import com.fasterxml.jackson.annotation.PropertyAccessor;
++import com.fasterxml.jackson.databind.DeserializationFeature;
++import com.fasterxml.jackson.databind.ObjectMapper;
++import com.fasterxml.jackson.datatype.joda.JodaModule;
++
++/**
++ * Created by Moupiya on 10/26/16.
++ */
++
++public final class Serializer {
++    public static ObjectMapper newObjectMapper() {
++        ObjectMapper objectMapper = new ObjectMapper();
++        objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
++        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
++        objectMapper.registerModule(new JodaModule());
++
++        return objectMapper;
++    }
++
++    private Serializer() {
++        throw new IllegalStateException("The private constructor of the class should not be invoked.");
++    }
++}
