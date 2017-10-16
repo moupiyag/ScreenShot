@@ -13,14 +13,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.exec.util.StringUtils;
+import org.springframework.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.detectify.dao.ScreenShotDao;
 import com.detectify.util.ScreenShotUtility;
@@ -42,21 +41,22 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		List<File> screenShots = new ArrayList<File>();
 	    final WebDriver driver = new FirefoxDriver();
 	    
-    	for(String url: urlList)
+	    try
 	    {
-    		try{
-    			screenShots.add(takeScreenshot(driver,url));
-    		}
-    		catch(Exception e){
-    			e.printStackTrace();
-    		}
-    		finally
-    		{
-    			if(driver != null)
-    				driver.close();
-    		}
-	    }
-
+	    	for(String url: urlList)
+		    {
+	    		if(!StringUtils.isEmpty(url))
+	    			screenShots.add(takeScreenshot(driver,url));
+		    }
+	    }catch(Exception e){
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(driver != null)
+				driver.close();
+		}
+	    
 		return screenShots;
 	}
 	
@@ -71,7 +71,7 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 			screenShots = new ArrayList<File>();
 			
 			String url = null;
-			while((url = br.readLine()) != null)
+			while((url = br.readLine()) != null && !StringUtils.isEmpty(url))
 			{
 				screenShots.add(takeScreenshot(driver, url));
 			}
@@ -89,7 +89,7 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return screenShots;
 	}
 	
-	private File takeScreenshot(WebDriver driver,String url) throws IOException
+	private File takeScreenshot(WebDriver driver,String url) throws IOException,WebDriverException
 	{
 		final File screenShot = createUniqueFile();
 		System.out.println("Opening page: "+ url);
@@ -160,45 +160,6 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		Date requestEndDate = format.parse(endDate);
 		List<String> screenShotPaths = screenShotDao.getScreenShotPaths(requestStartDate, requestEndDate);
 		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
-	}
-	
-
-	
-	public static void main(String args[]) throws ParseException
-	{
-		@SuppressWarnings("resource")
-		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		ScreenShotService screenShotService = (ScreenShotService)context.getBean("screenShotService");
-		try
-		{
-			if ("takeScreenShotByUrl".equalsIgnoreCase(args[0]))
-			{
-				screenShotService.takeScreenShots(args[1]);
-			}
-			else if("takeScreenShotByFile".equalsIgnoreCase(args[0]))
-			{
-				screenShotService.takeScreenShots(new File(args[1]));
-			}
-			else if ("searchScreenShotByUrl".equalsIgnoreCase(args[0]))
-			{
-				screenShotService.searchScreenShotsByUrl(args[1]);
-			}
-			else if ("searchScreenShotByDate".equalsIgnoreCase(args[0]))
-			{
-				screenShotService.searchScreenShotsByDate(args[1], args[2]);
-			}
-			else if ("searchScreenShotByUrlAndDate".equalsIgnoreCase(args[0]))
-			{
-				screenShotService.searchScreenShotsByUrlAndDate(args[1], args[2], args[3]);
-			}
-			else if ("searchScreenShotsByDateRange".equalsIgnoreCase(args[0]))
-			{
-				screenShotService.searchScreenShotsByDateRange(args[1], args[2], args[3]);
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

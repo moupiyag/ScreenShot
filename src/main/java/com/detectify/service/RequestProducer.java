@@ -28,13 +28,17 @@ public class RequestProducer {
 		 props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
 		 Producer<String, String> producer = new KafkaProducer<>(props);
-		 for (int i = 0; i < 100; i++)
-		     producer.send(new ProducerRecord<String, String>("my-topic", Integer.toString(i), Integer.toString(i)));
+		 for (int i = 25; i < 30; i++)
+		     producer.send(new ProducerRecord<String, String>("test", Integer.toString(i), Integer.toString(i)));
 
 		 producer.close();
 	}
 	
-	
+	public static void main(String args[])
+	{
+		RequestProducer requestProducer = new RequestProducer();
+		requestProducer.produceRequest();
+	}
 	 
 
 }
