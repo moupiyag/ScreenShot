@@ -14,6 +14,12 @@ import java.util.List;
  */
 public interface ScreenShotService {
 
+	/**
+	 *  
+	 * @param urls
+	 * @return
+	 * @throws IOException
+	 */
 	List<File> takeScreenShots(String urls) throws IOException;
 	
 	List<File> takeScreenShots(File fileWithUrls);

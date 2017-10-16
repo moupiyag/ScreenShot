@@ -151,6 +151,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.glassfish.grizzly/grizzly-http-server -->
+		<dependency>
+		    <groupId>org.glassfish.grizzly</groupId>
+		    <artifactId>grizzly-http-server</artifactId>
+		    <version>2.4.2</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-grizzly2-http -->
+		<dependency>
+		    <groupId>org.glassfish.jersey.containers</groupId>
+		    <artifactId>jersey-container-grizzly2-http</artifactId>
+		    <version>2.0-m05-2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -209,24 +223,5 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		</plugins>
 		<finalName>screenshot</finalName>
 	</build>
-        
-        <!-- https://mvnrepository.com/artifact/org.glassfish.grizzly/grizzly-http-server -->
-		<dependency>
-		    <groupId>org.glassfish.grizzly</groupId>
-		    <artifactId>grizzly-http-server</artifactId>
-		    <version>2.4.2</version>
-		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-grizzly2-http -->
-		<dependency>
-		    <groupId>org.glassfish.jersey.containers</groupId>
-		    <artifactId>jersey-container-grizzly2-http</artifactId>
-		    <version>2.0-m05-2</version>
-		</dependency>
-
-		
-        
-        
-    </dependencies>
     
 </project>
