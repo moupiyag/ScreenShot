@@ -65,8 +65,9 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		List<File> screenShots = null;
 		final WebDriver driver = new FirefoxDriver();
 		
-		try(FileReader fis = new FileReader(fileWithUrls);
-			BufferedReader br = new BufferedReader(fis)) {
+		try {
+			FileReader fis = new FileReader(fileWithUrls);
+			BufferedReader br = new BufferedReader(fis);
 			
 			screenShots = new ArrayList<File>();
 			

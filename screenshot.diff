@@ -1,0 +1,455 @@
+commit c2d928bd5b99a73a2808094fbe03cf0dacecbd62
+Author: kghosh <kghosh@groupon.com>
+Date:   Mon Oct 16 11:59:28 2017 -0700
+
+    making rest service using jersey
+
+diff --git a/pom.xml b/pom.xml
+index 66c35d7..41fdc50 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -8,8 +8,79 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
+   <packaging>jar</packaging>
+   
+   <name>ScreenShot Service</name>
+-  
+-  <dependencies>
++
++	<properties>
++		<jetty.port>8080</jetty.port>
++		<project.build.targetJdk>1.7</project.build.targetJdk>
++		<junit.version>4.11</junit.version>
++		<mockito.version>1.9.5</mockito.version>
++		<powermock.version>1.5.4</powermock.version>
++		<jersey.version>2.19</jersey.version>
++		<jackson.version>2.5.3</jackson.version>
++		<log4j.version>2.2</log4j.version>
++		<jetty.version>8.1.14.v20131031</jetty.version>
++		<skeletor.servlet.version>0.99.18</skeletor.servlet.version>
++		<skeletor.jetty_extra_classpath>${project.build.outputDirectory}</skeletor.jetty_extra_classpath>
++		<slf4j.version>1.7.7</slf4j.version>
++	</properties>
++
++	<dependencies>
++		<dependency>
++			<groupId>org.glassfish.jersey.containers</groupId>
++			<artifactId>jersey-container-servlet-core</artifactId>
++			<version>${jersey.version}</version>
++		</dependency>
++
++		<dependency>
++			<groupId>com.fasterxml.jackson.core</groupId>
++			<artifactId>jackson-core</artifactId>
++			<version>2.5.2</version>
++		</dependency>
++
++		<dependency>
++			<groupId>com.fasterxml.jackson.core</groupId>
++			<artifactId>jackson-databind</artifactId>
++			<version>${jackson.version}</version>
++		</dependency>
++
++		<dependency>
++			<groupId>com.fasterxml.jackson.core</groupId>
++			<artifactId>jackson-annotations</artifactId>
++			<version>${jackson.version}</version>
++		</dependency>
++
++		<dependency>
++			<groupId>com.fasterxml.jackson.dataformat</groupId>
++			<artifactId>jackson-dataformat-yaml</artifactId>
++			<version>${jackson.version}</version>
++		</dependency>
++
++
++		<dependency>
++			<groupId>org.glassfish.jersey.media</groupId>
++			<artifactId>jersey-media-json-jackson</artifactId>
++			<version>${jersey.version}</version>
++			<exclusions>
++				<exclusion>
++					<artifactId>jackson-core</artifactId>
++					<groupId>com.fasterxml.jackson.core</groupId>
++				</exclusion>
++				<exclusion>
++					<artifactId>jackson-annotations</artifactId>
++					<groupId>com.fasterxml.jackson.core</groupId>
++				</exclusion>
++				<exclusion>
++					<artifactId>jackson-databind</artifactId>
++					<groupId>com.fasterxml.jackson.core</groupId>
++				</exclusion>
++			</exclusions>
++		</dependency>
++
++		<dependency>
++			<groupId>org.glassfish.jersey.core</groupId>
++			<artifactId>jersey-client</artifactId>
++			<version>${jersey.version}</version>
++		</dependency>
+     
+     	<dependency>
+ 			<groupId>org.springframework</groupId>
+@@ -70,6 +141,73 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
+             <version>4.11</version>
+             <scope>test</scope>
+         </dependency>
+-    </dependencies>
++		<dependency>
++			<groupId>org.glassfish.jersey.core</groupId>
++			<artifactId>jersey-server</artifactId>
++			<version>2.23.2</version>
++		</dependency>
++		<dependency>
++			<groupId>javax.servlet</groupId>
++			<artifactId>javax.servlet-api</artifactId>
++			<version>3.1.0</version>
++		</dependency>
++	</dependencies>
++
++	<build>
++		<plugins>
++			<plugin>
++				<groupId>org.mortbay.jetty</groupId>
++				<artifactId>jetty-maven-plugin</artifactId>
++				<version>${jetty.version}</version>
++				<configuration>
++					<connectors>
++						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
++							<port>${jetty.port}</port>
++						</connector>
++					</connectors>
++					<scanIntervalSeconds>10</scanIntervalSeconds>
++					<stopKey>stop</stopKey>
++					<stopPort>8089</stopPort>
++					<systemProperties>
++						<systemProperty>
++							<name>custom.logpath</name>
++							<value>${project.build.directory}</value>
++						</systemProperty>
++						<systemProperty>
++							<name>log4j.configFolder</name>
++							<value>${project.basedir}/src/main/resources</value>
++						</systemProperty>
++					</systemProperties>
++					<webApp>
++						<contextPath>/</contextPath>
++						<!-- extraClasspath - Comma or semicolon separated path of filenames
++                            or URLs pointing to directories or jar files. Directories should end with '/' -->
++						<extraClasspath>${skeletor.jetty_extra_classpath};</extraClasspath>
++					</webApp>
++				</configuration>
++				<executions>
++					<execution>
++						<id>start-jetty</id>
++						<phase>pre-integration-test</phase>
++						<goals>
++							<goal>start</goal>
++						</goals>
++						<configuration>
++							<scanIntervalSeconds>0</scanIntervalSeconds>
++							<daemon>true</daemon>
++						</configuration>
++					</execution>
++					<execution>
++						<id>stop-jetty</id>
++						<phase>post-integration-test</phase>
++						<goals>
++							<goal>stop</goal>
++						</goals>
++					</execution>
++				</executions>
++			</plugin>
++		</plugins>
++		<finalName>screenshot</finalName>
++	</build>
+     
+ </project>
+\ No newline at end of file
+diff --git a/src/main/java/com/detectify/AppInit.java b/src/main/java/com/detectify/AppInit.java
+new file mode 100644
+index 0000000..9da3759
+--- /dev/null
++++ b/src/main/java/com/detectify/AppInit.java
+@@ -0,0 +1,16 @@
++package com.detectify;
++
++import org.glassfish.jersey.jackson.JacksonFeature;
++import org.glassfish.jersey.server.ResourceConfig;
++
++/**
++ * Created by moupiya on 10/16/17.
++ */
++
++public class AppInit extends ResourceConfig {
++
++    public AppInit() {
++        packages(true, "com.detectify.controllers");
++        register(JacksonFeature.class);
++    }
++}
+diff --git a/src/main/java/com/detectify/AppInitializationListener.java b/src/main/java/com/detectify/AppInitializationListener.java
+new file mode 100644
+index 0000000..a87b3eb
+--- /dev/null
++++ b/src/main/java/com/detectify/AppInitializationListener.java
+@@ -0,0 +1,18 @@
++package com.detectify;
++
++import javax.servlet.ServletContextEvent;
++import javax.servlet.ServletContextListener;
++
++/**
++ * Created by rvenugopal on 11/19/16.
++ */
++public final class AppInitializationListener implements ServletContextListener {
++
++    public void contextInitialized(ServletContextEvent servletContextEvent) {
++
++    }
++
++    public void contextDestroyed(ServletContextEvent servletContextEvent) {
++
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/detectify/controllers/DeployNotesController.java b/src/main/java/com/detectify/controllers/DeployNotesController.java
+new file mode 100644
+index 0000000..a01f228
+--- /dev/null
++++ b/src/main/java/com/detectify/controllers/DeployNotesController.java
+@@ -0,0 +1,25 @@
++package com.detectify.controllers;
++
++import javax.ws.rs.Consumes;
++import javax.ws.rs.DefaultValue;
++import javax.ws.rs.GET;
++import javax.ws.rs.Path;
++import javax.ws.rs.PathParam;
++import javax.ws.rs.Produces;
++import javax.ws.rs.QueryParam;
++import javax.ws.rs.core.MediaType;
++import javax.ws.rs.core.Response;
++
++@Path("deploy_notes/gen")
++@Consumes(MediaType.APPLICATION_JSON)
++public class DeployNotesController {
++    @GET
++    @Path("/{project: (.+)}/issues")
++    @Produces(MediaType.APPLICATION_JSON)
++    public Response getStatus(@PathParam("project") final String project,
++                              @DefaultValue("deployed") @QueryParam("deployedSha") final String deployedSha,
++                              @DefaultValue("master") @QueryParam("masterSha") final String masterSha) {
++        return Response.status(Response.Status.OK).entity(new String("Hello World")).build();
++    }
++
++}
+diff --git a/src/main/java/com/detectify/service/RequestConsumer.java b/src/main/java/com/detectify/service/RequestConsumer.java
+index bb871d8..6a7c100 100644
+--- a/src/main/java/com/detectify/service/RequestConsumer.java
++++ b/src/main/java/com/detectify/service/RequestConsumer.java
+@@ -26,10 +26,10 @@ public class RequestConsumer {
+ 	     props.put("enable.auto.commit", "false");
+ 	     props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+ 	     props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+-	     KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
++	     KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
+ 	     consumer.subscribe(Arrays.asList("test"));
+ 	     final int minBatchSize = 200;
+-	     List<ConsumerRecord<String, String>> buffer = new ArrayList<>();
++	     List<ConsumerRecord<String, String>> buffer = new ArrayList<ConsumerRecord<String, String>>();
+ 	     while (true) {
+ 	         ConsumerRecords<String, String> records = consumer.poll(100);
+ 	         for (ConsumerRecord<String, String> record : records) {
+diff --git a/src/main/java/com/detectify/service/RequestProducer.java b/src/main/java/com/detectify/service/RequestProducer.java
+index bb7334c..2d42182 100644
+--- a/src/main/java/com/detectify/service/RequestProducer.java
++++ b/src/main/java/com/detectify/service/RequestProducer.java
+@@ -27,7 +27,7 @@ public class RequestProducer {
+ 		 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+ 		 props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+ 
+-		 Producer<String, String> producer = new KafkaProducer<>(props);
++		 Producer<String, String> producer = new KafkaProducer<String, String>(props);
+ 		 for (int i = 25; i < 30; i++)
+ 		     producer.send(new ProducerRecord<String, String>("test", Integer.toString(i), Integer.toString(i)));
+ 
+diff --git a/src/main/java/com/detectify/service/ScreenShotServiceImpl.java b/src/main/java/com/detectify/service/ScreenShotServiceImpl.java
+index e611f7f..4641fa1 100644
+--- a/src/main/java/com/detectify/service/ScreenShotServiceImpl.java
++++ b/src/main/java/com/detectify/service/ScreenShotServiceImpl.java
+@@ -65,8 +65,9 @@ public class ScreenShotServiceImpl implements ScreenShotService {
+ 		List<File> screenShots = null;
+ 		final WebDriver driver = new FirefoxDriver();
+ 		
+-		try(FileReader fis = new FileReader(fileWithUrls);
+-			BufferedReader br = new BufferedReader(fis)) {
++		try {
++			FileReader fis = new FileReader(fileWithUrls);
++			BufferedReader br = new BufferedReader(fis);
+ 			
+ 			screenShots = new ArrayList<File>();
+ 			
+diff --git a/src/main/webapp/WEB-INF/smoke_test/smoke_test.rb b/src/main/webapp/WEB-INF/smoke_test/smoke_test.rb
+new file mode 100755
+index 0000000..15c84e6
+--- /dev/null
++++ b/src/main/webapp/WEB-INF/smoke_test/smoke_test.rb
+@@ -0,0 +1,47 @@
++require 'test/unit'
++
++# This file should not have any gem dependencies in it, or require external things.
++# It is tested to work OOTB on a Skeletor Java hostclass (even though it's ruby.  ;)
++#
++require 'net/http'
++require 'json'
++require 'uri'
++
++class SmokeTest < Test::Unit::TestCase
++  # set vars from shell environment, or set a default
++  def server_host
++    ENV['HOST'] || "http://localhost:8080"
++  end
++  def expected_version
++    ENV['VERSION'] || `git rev-parse HEAD`.strip
++  end
++
++  def test_status_is_200
++    response = get("#{server_host}/status.json")
++    assert_equal "200", response.code
++  end
++
++  def test_running_the_expected_version
++    response = get("#{server_host}/status.json")
++    assert_equal "200", response.code
++    assert_equal "OK", JSON.parse(response.body)['status']
++    assert_equal expected_version, JSON.parse(response.body)['version']
++  end
++
++  # test to ensure an old url is dead
++  def test_old_page_returns_404
++    response = get("#{server_host}/path/to/removed/endpoint")
++    assert_equal "404", response.code
++  end
++
++
++
++  private
++
++  def get(url)
++    Net::HTTP.get_response(URI.parse(url))
++  end
++
++end
++
++
+diff --git a/src/main/webapp/WEB-INF/web.xml b/src/main/webapp/WEB-INF/web.xml
+new file mode 100644
+index 0000000..4a914f7
+--- /dev/null
++++ b/src/main/webapp/WEB-INF/web.xml
+@@ -0,0 +1,23 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
++         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
++
++    <servlet>
++        <servlet-name>Jersey Web Application</servlet-name>
++        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
++        <init-param>
++            <param-name>javax.ws.rs.Application</param-name>
++            <param-value>com.detectify.AppInit</param-value>
++        </init-param>
++        <load-on-startup>1</load-on-startup>
++    </servlet>
++    <servlet-mapping>
++        <servlet-name>Jersey Web Application</servlet-name>
++        <url-pattern>/*</url-pattern>
++    </servlet-mapping>
++
++    <listener>
++        <listener-class>com.detectify.AppInitializationListener</listener-class>
++    </listener>
++</web-app>
+diff --git a/src/test/java/com/detectify/test/SceenShotUnitTest.java b/src/test/java/com/detectify/test/SceenShotUnitTest.java
+index 009a5d6..ef15f45 100644
+--- a/src/test/java/com/detectify/test/SceenShotUnitTest.java
++++ b/src/test/java/com/detectify/test/SceenShotUnitTest.java
+@@ -1,38 +1,38 @@
+-package com.detectify.test;
+-
+-import static junit.framework.Assert.assertEquals;
+-
+-import java.util.List;
+-
+-import org.junit.Before;
+-import org.junit.BeforeClass;
+-import org.junit.Test;
+-import org.springframework.context.ApplicationContext;
+-import org.springframework.context.support.ClassPathXmlApplicationContext;
+-
+-import com.detectify.service.ScreenShotService;
+-
+-/**
+- * @author Moupiya
+- *
+- */
+-public class SceenShotUnitTest {
+-	
+-	private ScreenShotService screenShotService = null;
+-	
+-	@BeforeClass
+-	public void setupInitialContext() throws Exception
+-	{
+-		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+-		screenShotService = (ScreenShotService)context.getBean("screenShotService");
+-	}
+-	
+-	@Before
+-    public void setupInitialDataBeforeEachTest() throws Exception {
+-    }
+-	
+-	@Test
+-    public void accountBalancesUpdatedAfterTransfer() {
+-    }
+-
+-}
++//package com.detectify.test;
++//
++//import static junit.framework.Assert.assertEquals;
++//
++//import java.util.List;
++//
++//import org.junit.Before;
++//import org.junit.BeforeClass;
++//import org.junit.Test;
++//import org.springframework.context.ApplicationContext;
++//import org.springframework.context.support.ClassPathXmlApplicationContext;
++//
++//import com.detectify.service.ScreenShotService;
++//
++///**
++// * @author Moupiya
++// *
++// */
++//public class SceenShotUnitTest {
++//
++//	private ScreenShotService screenShotService = null;
++//
++//	@BeforeClass
++//	public void setupInitialContext() throws Exception
++//	{
++//		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
++//		screenShotService = (ScreenShotService)context.getBean("screenShotService");
++//	}
++//
++//	@Before
++//    public void setupInitialDataBeforeEachTest() throws Exception {
++//    }
++//
++//	@Test
++//    public void accountBalancesUpdatedAfterTransfer() {
++//    }
++//
++//}
