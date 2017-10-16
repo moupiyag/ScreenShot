@@ -4,6 +4,7 @@
 package com.detectify.controllers;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -22,7 +23,6 @@ import org.springframework.util.StringUtils;
 
 import com.detectify.service.ScreenShotService;
 import com.detectify.util.ContextProvider;
-import com.sun.jersey.multipart.MultiPart;
 
 /**
  * @author Moupiya
@@ -37,23 +37,58 @@ public class SearchController {
 	
     @GET
     @Path("/byurl")
-//    @Produces(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.MULTIPART_FORM_DATA)
-//    @Produces("image/jpg")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByUrl(@QueryParam("url") final String url) {
     	
     	if(StringUtils.isEmpty(url))
     		return Response.status(Response.Status.BAD_REQUEST).entity(new String("URL is blank")).build();
     	
     	List<File> screenShots = screenShotService.searchScreenShotsByUrl(url);
-    	MultiPart multipart = new MultiPart().bodyPart(entity, mediaType);
-    	GenericEntity<List<File>> entity = new GenericEntity<List<File>>(screenShots) {};
-    	ResponseBuilder response = Response.ok(entity);
-		response.header("Content-Disposition",
-			"attachment;");
-		return response.build();
+    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
+    }
+    
+    @GET
+    @Path("/bydate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getScreenShotsByDate(@QueryParam("date") final String date,
+    		@QueryParam("dateFormat") final String dateFormat) throws ParseException {
     	
-//    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
+    	if(StringUtils.isEmpty(date) || StringUtils.isEmpty(dateFormat))
+    		return Response.status(Response.Status.BAD_REQUEST)
+    				.entity(new String("Date or Date format is blank")).build();
+    	
+    	List<File> screenShots = screenShotService.searchScreenShotsByDate(date, dateFormat);
+    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
+    }
+    
+    @GET
+    @Path("/byurlanddate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getScreenShotsByUrlAndDate(@QueryParam("url") final String url,
+    		@QueryParam("date") final String date,
+    		@QueryParam("dateFormat") final String dateFormat) throws ParseException {
+    	
+    	if(StringUtils.isEmpty(url) || StringUtils.isEmpty(date) || StringUtils.isEmpty(dateFormat))
+    		return Response.status(Response.Status.BAD_REQUEST)
+    				.entity(new String("Url or Date or Date format is blank")).build();
+    	
+    	List<File> screenShots = screenShotService.searchScreenShotsByUrlAndDate(url, date, dateFormat);
+    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
+    }
+    
+    @GET
+    @Path("/bydaterange")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getScreenShotsByDateRange(@QueryParam("startdate") final String startDate,
+    		@QueryParam("enddate") final String endDate,
+    		@QueryParam("dateFormat") final String dateFormat) throws ParseException {
+    	
+    	if(StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate) || StringUtils.isEmpty(dateFormat))
+    		return Response.status(Response.Status.BAD_REQUEST)
+    				.entity(new String("Start date or End date or Date format is blank")).build();
+    	
+    	List<File> screenShots = screenShotService.searchScreenShotsByDateRange(startDate, endDate, dateFormat);
+    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
     }
 
 }
