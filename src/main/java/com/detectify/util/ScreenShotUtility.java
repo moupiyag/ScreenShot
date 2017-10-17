@@ -3,9 +3,15 @@
  */
 package com.detectify.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.util.StringUtils;
 
 /**
  * @author Moupiya
@@ -24,5 +30,27 @@ public class ScreenShotUtility {
 			screenShots.add(new File(path));
 		}
 		return screenShots;
+	}
+	
+	public static String getUrlsFromFile(File file)
+	{
+		StringBuilder urls = new StringBuilder();
+		try {
+			FileReader fis = new FileReader(file);
+			BufferedReader br = new BufferedReader(fis);
+			
+			String url = null;
+			while((url = br.readLine()) != null && !StringUtils.isEmpty(url)) {
+				urls.append(url)
+					.append(";");
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		return urls.toString();
 	}
 }

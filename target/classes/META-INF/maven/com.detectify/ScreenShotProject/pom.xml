@@ -166,7 +166,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		    <version>2.0-m05-2</version>
 		</dependency>
 		
-<<<<<<< HEAD
 		<!-- https://mvnrepository.com/artifact/com.sun.jersey.contribs/jersey-multipart -->
 		<dependency>
 		    <groupId>com.sun.jersey.contribs</groupId>
@@ -174,7 +173,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		    <version>1.19.4</version>
 		</dependency>
 		
-=======
+		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -195,7 +194,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
->>>>>>> Kafka-diff
 	</dependencies>
 
 	<build>

@@ -4,7 +4,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
- * Created by rvenugopal on 11/19/16.
+ * Created by Moupiya
  */
 public final class AppInitializationListener implements ServletContextListener {
 

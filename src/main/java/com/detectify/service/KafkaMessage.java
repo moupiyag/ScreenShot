@@ -9,13 +9,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KafkaMessage {
-    private String url;
+    private String urls;
     private String uuid;
-	public String getUrl() {
-		return url;
+	public String getUrls() {
+		return urls;
 	}
-	public void setUrl(String url) {
-		this.url = url;
+	public void setUrl(String urls) {
+		this.urls = urls;
 	}
 	public String getUuid() {
 		return uuid;

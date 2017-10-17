@@ -18,8 +18,10 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.util.StringUtils;
 
+import com.detectify.service.MessageService;
 import com.detectify.service.ScreenShotService;
 import com.detectify.util.ContextProvider;
+import com.detectify.util.ScreenShotUtility;
 
 /**
  * @author Moupiya
@@ -30,7 +32,7 @@ import com.detectify.util.ContextProvider;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ScreenShotController {
 	
-ScreenShotService screenShotService = ContextProvider.getBean("screenShotService");
+	MessageService messageService = ContextProvider.getBean("messageService");
 	
     @POST
     @Path("/byurls")
@@ -40,12 +42,12 @@ ScreenShotService screenShotService = ContextProvider.getBean("screenShotService
     	if(StringUtils.isEmpty(urls))
     		return Response.status(Response.Status.BAD_REQUEST).entity(new String("URL is blank")).build();
     	
-    	List<File> screenShots = screenShotService.takeScreenShots(urls);
-    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
+    	messageService.sendMessage(urls);
+    	return Response.status(Response.Status.OK).entity(new String("Taking Screenshots...")).build();
     }
     
     @POST
-    @Path("/byurls")
+    @Path("/byfile")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByFile(@QueryParam("file") final String filePath) throws IOException {
     	
@@ -53,8 +55,8 @@ ScreenShotService screenShotService = ContextProvider.getBean("screenShotService
     		return Response.status(Response.Status.BAD_REQUEST).entity(new String("filePath is blank")).build();
     	
     	File file = new File(filePath);
-    	List<File> screenShots = screenShotService.takeScreenShots(file);
-    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
+    	messageService.sendMessage(ScreenShotUtility.getUrlsFromFile(file));
+    	return Response.status(Response.Status.OK).entity(new String("Taking Screenshots...")).build();
     }
     
 }

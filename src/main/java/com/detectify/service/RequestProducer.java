@@ -10,13 +10,15 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import com.detectify.util.ContextProvider;
+
 /**
  * @author Moupiya
  *
  */
 public class RequestProducer {
 	
-	public void produceRequest(final String url)
+	public void produceRequest(final String urls)
 	{
 		Properties props = new Properties();
 		 props.put("bootstrap.servers", "localhost:9092");
@@ -28,13 +30,11 @@ public class RequestProducer {
 		 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		 props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-		 //Producer<String, String> producer = new KafkaProducer<String, String>(props);
-		 final KafkaMessage kafkaMessage = new KafkaMessage();
-		 kafkaMessage.setUrl(url);
+		 final KafkaMessage kafkaMessage = ContextProvider.getBean("kafkaMessage");
+		 kafkaMessage.setUrl(urls);
 		 kafkaMessage.setUuid(UUID.randomUUID().toString());
 		 Producer<String, KafkaMessage> producer = new KafkaProducer<String, KafkaMessage>(props);
-		 for (int i = 25; i < 30; i++)
-			 producer.send(new ProducerRecord<String, KafkaMessage>("test",UUID.randomUUID().toString(), kafkaMessage));
+		 producer.send(new ProducerRecord<String, KafkaMessage>("test",UUID.randomUUID().toString(), kafkaMessage));
 
 		 producer.close();
 	}
