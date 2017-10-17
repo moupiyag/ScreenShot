@@ -4,19 +4,16 @@
 package com.detectify.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import lombok.Getter;
+import com.detectify.config.ConfigReader;
+import com.detectify.util.ContextProvider;
+import com.detectify.util.Json;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-
-import com.detectify.util.ContextProvider;
-import com.detectify.util.Json;
-import org.apache.kafka.clients.producer.KafkaProducer;
 
 /**
  * @author Moupiya
@@ -49,13 +46,13 @@ public class RequestConsumer implements Runnable{
 	private static void init() {
 		if(consumer == null) {
 			Properties props = new Properties();
-			props.put("bootstrap.servers", "localhost:9092");
-			props.put("group.id", "test");
-			props.put("enable.auto.commit", "false");
+			props.put("bootstrap.servers", ConfigReader.getInstance().getString(ConfigReader.KAFKA_BOOTSTRAP_SERVER));
+			props.put("group.id", ConfigReader.getInstance().getString(ConfigReader.KAFKA_GROUP_ID));
+			props.put("enable.auto.commit", ConfigReader.getInstance().getString(ConfigReader.KAFKA_ENABLE_AUTO_COMMIT));
 			props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 			props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 			consumer = new KafkaConsumer<String, Byte[]>(props);
-			consumer.subscribe(Arrays.asList("test"));
+			consumer.subscribe(Arrays.asList(ConfigReader.getInstance().getString(ConfigReader.KAFKA_SCREENSHOT_TOPIC)));
 		}
 	}
 

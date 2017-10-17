@@ -3,16 +3,16 @@
  */
 package com.detectify.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
-
+import com.detectify.config.ConfigReader;
+import com.detectify.util.ContextProvider;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import com.detectify.util.ContextProvider;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
 
 /**
  * @author Moupiya
@@ -23,12 +23,12 @@ public class RequestProducer {
 	public static void produceRequest(final List<String> urls)
 	{
 		Properties props = new Properties();
-		 props.put("bootstrap.servers", "localhost:9092");
+		 props.put("bootstrap.servers", ConfigReader.getInstance().getString(ConfigReader.KAFKA_BOOTSTRAP_SERVER));
 		 props.put("acks", "all");
-		 props.put("retries", 0);
-		 props.put("batch.size", 16384);
-		 props.put("linger.ms", 1);
-		 props.put("buffer.memory", 33554432);
+		 props.put("retries", ConfigReader.getInstance().getInteger(ConfigReader.KAFKA_PRODUCER_RETRIES));
+		 props.put("batch.size", ConfigReader.getInstance().getInteger(ConfigReader.KAFKA_PRODUCER_BATCH_SIZE));
+		 props.put("linger.ms", ConfigReader.getInstance().getString(ConfigReader.KAFKA_PRODUCER_LINGER));
+		 props.put("buffer.memory", ConfigReader.getInstance().getString(ConfigReader.KAFKA_PRODUCER_BUFFER_MEMORY));
 		 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		 props.put("value.serializer", "com.detectify.util.JsonEncoder");
 
