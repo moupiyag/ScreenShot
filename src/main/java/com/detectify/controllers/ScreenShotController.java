@@ -16,6 +16,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.detectify.service.RequestProducer;
 import org.springframework.util.StringUtils;
 
 import com.detectify.service.MessageService;
@@ -37,12 +38,8 @@ public class ScreenShotController {
     @POST
     @Path("/byurls")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getScreenShotsByUrl(@QueryParam("urls") final String urls) throws IOException {
-    	
-    	if(StringUtils.isEmpty(urls))
-    		return Response.status(Response.Status.BAD_REQUEST).entity(new String("URL is blank")).build();
-    	
-    	messageService.sendMessage(urls);
+    public Response getScreenShotsByUrl(final List<String> urls) throws IOException {
+        RequestProducer.produceRequest(urls);
     	return Response.status(Response.Status.OK).entity(new String("Taking Screenshots...")).build();
     }
     
@@ -58,5 +55,4 @@ public class ScreenShotController {
     	messageService.sendMessage(ScreenShotUtility.getUrlsFromFile(file));
     	return Response.status(Response.Status.OK).entity(new String("Taking Screenshots...")).build();
     }
-    
 }

@@ -3,6 +3,8 @@
  */
 package com.detectify.service;
 
+import java.util.List;
+
 /**
  * @author Moupiya
  *
@@ -15,8 +17,7 @@ public class MessageServiceImpl implements MessageService {
 		this.requestProducer = requestProducer;
 	}
 
-	@Override
-	public void sendMessage(String urls) {
+	public void sendMessage(List<String> urls) {
 		requestProducer.produceRequest(urls);	
 	}
 

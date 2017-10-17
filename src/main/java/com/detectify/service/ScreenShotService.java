@@ -20,7 +20,7 @@ public interface ScreenShotService {
 	 * @return
 	 * @throws IOException
 	 */
-	List<File> takeScreenShots(String urls) throws IOException;
+	List<File> takeScreenShots(List<String> urls) throws IOException;
 	
 	List<File> takeScreenShots(File fileWithUrls);
 	

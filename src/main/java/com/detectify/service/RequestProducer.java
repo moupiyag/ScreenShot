@@ -3,6 +3,8 @@
  */
 package com.detectify.service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -18,7 +20,7 @@ import com.detectify.util.ContextProvider;
  */
 public class RequestProducer {
 	
-	public void produceRequest(final String urls)
+	public static void produceRequest(final List<String> urls)
 	{
 		Properties props = new Properties();
 		 props.put("bootstrap.servers", "localhost:9092");
@@ -31,7 +33,7 @@ public class RequestProducer {
 		 props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
 		 final KafkaMessage kafkaMessage = ContextProvider.getBean("kafkaMessage");
-		 kafkaMessage.setUrl(urls);
+		 kafkaMessage.setUrls(urls);
 		 kafkaMessage.setUuid(UUID.randomUUID().toString());
 		 Producer<String, KafkaMessage> producer = new KafkaProducer<String, KafkaMessage>(props);
 		 producer.send(new ProducerRecord<String, KafkaMessage>("test",UUID.randomUUID().toString(), kafkaMessage));
@@ -42,6 +44,6 @@ public class RequestProducer {
 	public static void main(String args[])
 	{
 		RequestProducer requestProducer = new RequestProducer();
-		requestProducer.produceRequest("https://www.google.com");
+		requestProducer.produceRequest(Arrays.asList("https://www.google.com"));
 	}
 }

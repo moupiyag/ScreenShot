@@ -32,17 +32,16 @@ public class ScreenShotUtility {
 		return screenShots;
 	}
 	
-	public static String getUrlsFromFile(File file)
+	public static List<String> getUrlsFromFile(File file)
 	{
-		StringBuilder urls = new StringBuilder();
+		List<String> urls = new ArrayList<String>();
 		try {
 			FileReader fis = new FileReader(file);
 			BufferedReader br = new BufferedReader(fis);
 			
 			String url = null;
 			while((url = br.readLine()) != null && !StringUtils.isEmpty(url)) {
-				urls.append(url)
-					.append(";");
+				urls.add(url);
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -51,6 +50,6 @@ public class ScreenShotUtility {
 			e1.printStackTrace();
 		}
 		
-		return urls.toString();
+		return urls;
 	}
 }

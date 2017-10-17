@@ -3,6 +3,7 @@ package com.detectify.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
@@ -24,7 +25,7 @@ public class CommandPromptServiceProvider {
 		{
 			if ("takeScreenShotByUrl".equalsIgnoreCase(args[0]))
 			{
-				printFileName(screenShotService.takeScreenShots(args[1]));
+				printFileName(screenShotService.takeScreenShots(Arrays.asList(args[1])));
 			}
 			else if("takeScreenShotByFile".equalsIgnoreCase(args[0]))
 			{
