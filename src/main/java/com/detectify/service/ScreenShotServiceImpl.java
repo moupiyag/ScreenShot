@@ -27,10 +27,18 @@ import com.detectify.util.ScreenShotUtility;
 
 public class ScreenShotServiceImpl implements ScreenShotService {
 	
-	private static final String screenShotTargetDir = "C:/Users/Moupiya/Documents/Habijabi/";
+	private String screenShotTargetDir;
 	SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyyMMdd_hhmmss.SSS");
-	
 	private ScreenShotDao screenShotDao;
+	
+
+	public String getScreenShotTargetDir() {
+		return screenShotTargetDir;
+	}
+	
+	public void setScreenShotTargetDir(String screenShotTargetDir) {
+		this.screenShotTargetDir = screenShotTargetDir;
+	}
 
 	public void setScreenShotDao(ScreenShotDao screenShotDao) {
 		this.screenShotDao = screenShotDao;
@@ -63,9 +71,8 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		List<File> screenShots = null;
 		final WebDriver driver = new FirefoxDriver();
 		
-		try {
-			FileReader fis = new FileReader(fileWithUrls);
-			BufferedReader br = new BufferedReader(fis);
+		try (FileReader fis = new FileReader(fileWithUrls);
+				BufferedReader br = new BufferedReader(fis)){
 			
 			screenShots = new ArrayList<File>();
 			

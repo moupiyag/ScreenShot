@@ -31,6 +31,9 @@
       	<property name="screenShotDao"> 
          	<ref bean="screenShotDao"/> 
       	</property>
+      	<property name="screenShotTargetDir"> 
+         	<value>C:/Users/Moupiya/Documents/ScreenShotData/</value> 
+      	</property>
    	</bean>
    	
    	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
