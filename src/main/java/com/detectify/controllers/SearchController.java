@@ -5,6 +5,7 @@ package com.detectify.controllers;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -37,15 +38,15 @@ public class SearchController {
 	
     @GET
     @Path("/byUrl")
-    @Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByUrl(@QueryParam("url") final String url) {
     	
     	if(StringUtils.isEmpty(url))
     		return Response.status(Response.Status.BAD_REQUEST).entity(new String("URL is blank")).build();
     	
     	List<File> screenShots = screenShotService.searchScreenShotsByUrl(url);
-    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
-    }
+		return Response.status(Response.Status.OK).entity(screenShots).build();
+	}
     
     @GET
     @Path("/byDate")
@@ -88,7 +89,7 @@ public class SearchController {
     				.entity(new String("Start date or End date or Date format is blank")).build();
     	
     	List<File> screenShots = screenShotService.searchScreenShotsByDateRange(startDate, endDate, dateFormat);
-    	return Response.status(Response.Status.OK).entity((Object)screenShots).build();
+    	return Response.status(Response.Status.OK).entity((Object)screenShots).type(MediaType.APPLICATION_JSON).build();
     }
 
 }
