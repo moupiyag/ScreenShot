@@ -24,6 +24,7 @@ public class RequestProducer {
 	{
 		Properties props = new Properties();
 		 props.put("bootstrap.servers", ConfigReader.getInstance().getString(ConfigReader.KAFKA_BOOTSTRAP_SERVER));
+//		 props.put("bootstrap.servers", "localhost:9092");
 		 props.put("acks", "all");
 		 props.put("retries", ConfigReader.getInstance().getInteger(ConfigReader.KAFKA_PRODUCER_RETRIES));
 		 props.put("batch.size", ConfigReader.getInstance().getInteger(ConfigReader.KAFKA_PRODUCER_BATCH_SIZE));

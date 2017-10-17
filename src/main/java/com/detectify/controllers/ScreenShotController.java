@@ -40,7 +40,7 @@ public class ScreenShotController {
     @POST
     @Path("/byFile")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getScreenShotsByFile(@QueryParam("file") final String filePath) throws IOException {
+    public Response getScreenShotsByFile(final String filePath) throws IOException {
     	
     	if(StringUtils.isEmpty(filePath))
     		return Response.status(Response.Status.BAD_REQUEST).entity(new String("filePath is blank")).build();

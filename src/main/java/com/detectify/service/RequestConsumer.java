@@ -26,11 +26,13 @@ public class RequestConsumer implements Runnable{
 
 	public void run()
 	{
+		System.out.println("Starting Kafka Consumer...................");
 		init();
 		while (true) {
 			ConsumerRecords<String, Byte[]> records = consumer.poll(100);
 			ScreenShotService screenShotService = ContextProvider.getBean("screenShotService");
 			for (ConsumerRecord<String, Byte[]> record : records) {
+				System.out.println("Found Consumer record : " + record.key());
 				Json json = Json.copyOf(new String(String.valueOf(record.value())));
 				KafkaMessage kafkaMessage = json.cast(KafkaMessage.class);
 				try {
@@ -39,7 +41,7 @@ public class RequestConsumer implements Runnable{
 					e.printStackTrace();
 				}
 			}
-			consumer.commitSync();
+//			consumer.commitSync();
 		}
 	}
 

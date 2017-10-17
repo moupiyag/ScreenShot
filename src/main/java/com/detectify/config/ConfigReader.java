@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by dabroal on 10/16/17.
  */
 public class ConfigReader {
-    public final static String KAFKA_BOOTSTRAP_SERVER = "localhost:9092";
+    public final static String KAFKA_BOOTSTRAP_SERVER = "kafka.bootstrap.servers";
     public final static String KAFKA_GROUP_ID = "kafka.group.id";
     public final static String KAFKA_ENABLE_AUTO_COMMIT = "kafka.enable.auto.commit";
     public final static String KAFKA_SCREENSHOT_TOPIC = "kafka.screenshot.topic";
