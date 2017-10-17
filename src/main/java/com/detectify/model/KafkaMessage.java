@@ -1,4 +1,4 @@
-package com.detectify.service;
+package com.detectify.model;
 
 import lombok.Getter;
 import lombok.Setter;

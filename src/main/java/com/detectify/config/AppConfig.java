@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Created by dabroal on 10/16/17.
+ * @author Moupiya
  */
 public class AppConfig {
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);

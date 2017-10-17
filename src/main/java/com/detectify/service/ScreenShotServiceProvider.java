@@ -12,6 +12,8 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.detectify.util.ContextProvider;
+
 /**
  * @author Moupiya
  *
@@ -23,8 +25,7 @@ public class ScreenShotServiceProvider {
 	 * @throws ParseException 
 	 */
 	public static void main(String[] args) throws ParseException {
-		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		ScreenShotService screenShotService = (ScreenShotService)context.getBean("screenShotService");
+		ScreenShotService screenShotService = ContextProvider.getBean("screenShotService");
 		try
 		{
 			if ("takeScreenShotByUrl".equalsIgnoreCase(args[0]))

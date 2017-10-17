@@ -4,7 +4,7 @@ C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\AppIni
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\util\ContextProvider.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\util\Json.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\util\Serializer.java
-C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\service\CommandPromptServiceProvider.java
+C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\model\KafkaMessage.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\service\ScreenShotServiceImpl.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\config\ConfigReader.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\controllers\SearchController.java
@@ -13,7 +13,6 @@ C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\servic
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\controllers\ScreenShotController.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\service\ScreenShotServiceProvider.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\service\RequestConsumer.java
-C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\service\KafkaMessage.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\config\AppConfig.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\service\ScreenShotService.java
 C:\Users\Moupiya\workspace1\ScreenShotProject\src\main\java\com\detectify\dao\ScreenShotDaoImpl.java

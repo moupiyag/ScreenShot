@@ -1,8 +1,11 @@
-com\detectify\service\KafkaMessage.class
 com\detectify\service\RequestProducer.class
 com\detectify\util\ContextProvider.class
+com\detectify\AppInitializationListener.class
+com\detectify\util\JsonEncoder.class
 com\detectify\util\Json.class
 com\detectify\dao\ScreenShotDaoImpl.class
+com\detectify\model\KafkaMessage.class
+com\detectify\service\RequestConsumer.class
 com\detectify\service\ScreenShotServiceProvider.class
 com\detectify\service\ScreenShotService.class
 com\detectify\AppInit.class
@@ -10,12 +13,8 @@ com\detectify\controllers\ScreenShotController.class
 com\detectify\service\ScreenShotServiceImpl.class
 com\detectify\util\ScreenShotUtility.class
 com\detectify\dao\ScreenShotDaoImpl$PathRowMapper.class
-com\detectify\service\CommandPromptServiceProvider.class
+com\detectify\util\Serializer.class
 com\detectify\config\ConfigReader.class
 com\detectify\controllers\SearchController.class
-com\detectify\dao\ScreenShotDao.class
-com\detectify\AppInitializationListener.class
-com\detectify\util\JsonEncoder.class
-com\detectify\service\RequestConsumer.class
-com\detectify\util\Serializer.class
 com\detectify\config\AppConfig.class
+com\detectify\dao\ScreenShotDao.class

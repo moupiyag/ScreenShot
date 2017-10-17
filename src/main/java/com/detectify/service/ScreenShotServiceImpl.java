@@ -44,6 +44,7 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		this.screenShotDao = screenShotDao;
 	}
 
+	@Override
 	public List<File> takeScreenShots(List<String> urls) throws IOException {
 		List<File> screenShots = new ArrayList<File>();
 	    final WebDriver driver = new FirefoxDriver();
@@ -67,13 +68,17 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return screenShots;
 	}
 	
+	@Override
 	public List<File> takeScreenShots(File fileWithUrls) {
 		List<File> screenShots = null;
 		final WebDriver driver = new FirefoxDriver();
+		FileReader fis = null;
+		BufferedReader br = null;
 		
-		try (FileReader fis = new FileReader(fileWithUrls);
-				BufferedReader br = new BufferedReader(fis)){
-			
+		try {
+			fis = new FileReader(fileWithUrls);
+			br = new BufferedReader(fis);
+					
 			screenShots = new ArrayList<File>();
 			
 			String url = null;
@@ -89,8 +94,17 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		}
 		finally
 		{
-			if(driver != null)
-				driver.close();
+			try{
+				if(fis != null)
+					fis.close();
+				if(br != null)
+					br.close();
+				if(driver != null)
+					driver.close();
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 		return screenShots;
 	}
@@ -100,7 +114,6 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		final File screenShot = createUniqueFile();
 		System.out.println("Opening page: "+ url);
 		driver.get(url);
-		System.out.println("Waiting for page to load: "+ url);
   	    try {
 			TimeUnit.SECONDS.sleep(5);
 		} catch (InterruptedException e) {
@@ -134,6 +147,7 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return file;
 	}
 
+	@Override
 	public List<File> searchScreenShotsByUrl(String url) {
 		
 		List<String> screenShotPaths = screenShotDao.getScreenShotPaths(url);
@@ -141,6 +155,7 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		
 	}
 
+	@Override
 	public List<File> searchScreenShotsByDate(String date, String dateFormat) throws ParseException {
 		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 		Date requestDate = format.parse(date);
@@ -148,6 +163,7 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
 	}
 	
+	@Override
 	public List<File> searchScreenShotsByUrlAndDate(String url, String date, String dateFormat) throws ParseException{
 		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 		Date requestDate = format.parse(date);
@@ -155,6 +171,7 @@ public class ScreenShotServiceImpl implements ScreenShotService {
 		return ScreenShotUtility.getScreenShotsByPaths(screenShotPaths);
 	}
 
+	@Override
 	public List<File> searchScreenShotsByDateRange(String startDate, String endDate, String dateFormat)
 			throws ParseException {
 		SimpleDateFormat format = new SimpleDateFormat(dateFormat);

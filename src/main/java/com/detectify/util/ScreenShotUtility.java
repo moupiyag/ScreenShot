@@ -49,7 +49,6 @@ public class ScreenShotUtility {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
 		return urls;
 	}
 

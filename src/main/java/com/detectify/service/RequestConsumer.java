@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import lombok.Getter;
 import com.detectify.config.ConfigReader;
+import com.detectify.model.KafkaMessage;
 import com.detectify.util.ContextProvider;
 import com.detectify.util.Json;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -62,12 +63,6 @@ public class RequestConsumer implements Runnable{
 		if(consumer != null) {
 			consumer.close();
 		}
-	}
-
-	public static void main(String args[])
-	{
-		RequestConsumer requestConsumer = new RequestConsumer();
-		requestConsumer.run();
 	}
 
 }

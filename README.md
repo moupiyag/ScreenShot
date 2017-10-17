@@ -8,6 +8,10 @@
 
 * **MySQL ver 5.7.19.0** is used in this project.
 
+### FIREFOX
+
+* **Firefox ver 47.0.1** is needed to be installed.
+
 ### KAFKA message queue preliminaries
 
 * **Kafka ver 2.11-0.10.2.1** is used in this project.
@@ -49,7 +53,7 @@
 * To take screenshots (list of urls): 
 
   ```typescript
-  curl-X POST http://localhost:8080/screenShot/takeScreenShot/byUrls  -H 'cache-control: no-cache'  -H 'content-type: application/json'  -H 'postman-token:725586f6-3faa-bd5e-43a2-47f630842835'  -d'["https://en.wikipedia.org/wiki/URL","https://www.facebook.com/","https://www.key-systems.net/en/blog/list-of-domain-extensions","https://iwantmyname.com/domains/domain-name-registration-list-of-extensions"]'
+  curl -X POST http://localhost:8080/screenShot/takeScreenShot/byUrls  -H 'cache-control: no-cache'  -H 'content-type: application/json'  -H 'postman-token:725586f6-3faa-bd5e-43a2-47f630842835'  -d'["https://en.wikipedia.org/wiki/URL","https://www.facebook.com/","https://www.key-systems.net/en/blog/list-of-domain-extensions","https://iwantmyname.com/domains/domain-name-registration-list-of-extensions"]'
   ```
 
 * To take screenshots (file with url list):
@@ -79,7 +83,7 @@
 * To search (request by date range):
 
   ```java
-  - curl -X GET  'http://localhost:8080/screenShot/search/byDateRange?startDate=20171015&endDate=20171016&dateFormat=yyyyMMdd'  -H 'cache-control: no-cache'  -H 'content-type: application/json'  -H 'postman-token:8e249d00-6521-da66-3348-12bfd7f26b13'
+  curl -X GET  'http://localhost:8080/screenShot/search/byDateRange?startDate=20171015&endDate=20171016&dateFormat=yyyyMMdd'  -H 'cache-control: no-cache'  -H 'content-type: application/json'  -H 'postman-token:8e249d00-6521-da66-3348-12bfd7f26b13'
   ```
 
   ​
