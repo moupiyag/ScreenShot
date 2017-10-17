@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import lombok.Getter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -20,11 +21,12 @@ import com.detectify.util.Json;
  * @author Moupiya
  *
  */
-public class RequestConsumer {
+public class RequestConsumer implements Runnable{
 
+	@Getter
 	private static KafkaConsumer<String, Byte[]> consumer;
 
-	public static void start()
+	public void run()
 	{
 		//		Properties props = new Properties();
 		//	     props.put("bootstrap.servers", "localhost:9092");
@@ -88,7 +90,7 @@ public class RequestConsumer {
 	public static void main(String args[])
 	{
 		RequestConsumer requestConsumer = new RequestConsumer();
-		requestConsumer.start();
+		requestConsumer.run();
 	}
 
 }

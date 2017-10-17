@@ -30,9 +30,9 @@ public class RequestProducer {
 		 props.put("linger.ms", 1);
 		 props.put("buffer.memory", 33554432);
 		 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		 props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		 props.put("value.serializer", "com.detectify.util.JsonEncoder");
 
-		 final KafkaMessage kafkaMessage = ContextProvider.getBean("kafkaMessage");
+		 final KafkaMessage kafkaMessage = new KafkaMessage();
 		 kafkaMessage.setUrls(urls);
 		 kafkaMessage.setUuid(UUID.randomUUID().toString());
 		 Producer<String, KafkaMessage> producer = new KafkaProducer<String, KafkaMessage>(props);

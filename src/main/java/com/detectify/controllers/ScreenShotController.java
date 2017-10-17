@@ -29,14 +29,12 @@ import com.detectify.util.ScreenShotUtility;
  *
  */
 
-@Path("ScreenShot/takescreenshot")
+@Path("screenShot/takeScreenShot")
 @Consumes(MediaType.APPLICATION_JSON)
 public class ScreenShotController {
-	
-	MessageService messageService = ContextProvider.getBean("messageService");
-	
+
     @POST
-    @Path("/byurls")
+    @Path("/byUrls")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByUrl(final List<String> urls) throws IOException {
         RequestProducer.produceRequest(urls);
@@ -44,7 +42,7 @@ public class ScreenShotController {
     }
     
     @POST
-    @Path("/byfile")
+    @Path("/byFile")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByFile(@QueryParam("file") final String filePath) throws IOException {
     	
@@ -52,7 +50,7 @@ public class ScreenShotController {
     		return Response.status(Response.Status.BAD_REQUEST).entity(new String("filePath is blank")).build();
     	
     	File file = new File(filePath);
-    	messageService.sendMessage(ScreenShotUtility.getUrlsFromFile(file));
+    	RequestProducer.produceRequest(ScreenShotUtility.getUrlsFromFile(file));
     	return Response.status(Response.Status.OK).entity(new String("Taking Screenshots...")).build();
     }
 }

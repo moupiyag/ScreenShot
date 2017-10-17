@@ -29,14 +29,14 @@ import com.detectify.util.ContextProvider;
  *
  */
 
-@Path("ScreenShot/search")
+@Path("screenShot/search")
 @Consumes(MediaType.APPLICATION_JSON)
 public class SearchController {
 	
 	ScreenShotService screenShotService = ContextProvider.getBean("screenShotService");
 	
     @GET
-    @Path("/byurl")
+    @Path("/byUrl")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByUrl(@QueryParam("url") final String url) {
     	
@@ -48,7 +48,7 @@ public class SearchController {
     }
     
     @GET
-    @Path("/bydate")
+    @Path("/byDate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByDate(@QueryParam("date") final String date,
     		@QueryParam("dateFormat") final String dateFormat) throws ParseException {
@@ -62,7 +62,7 @@ public class SearchController {
     }
     
     @GET
-    @Path("/byurlanddate")
+    @Path("/byUrlAndDate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getScreenShotsByUrlAndDate(@QueryParam("url") final String url,
     		@QueryParam("date") final String date,
@@ -77,10 +77,10 @@ public class SearchController {
     }
     
     @GET
-    @Path("/bydaterange")
+    @Path("/byDateRange")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getScreenShotsByDateRange(@QueryParam("startdate") final String startDate,
-    		@QueryParam("enddate") final String endDate,
+    public Response getScreenShotsByDateRange(@QueryParam("startDate") final String startDate,
+    		@QueryParam("endDate") final String endDate,
     		@QueryParam("dateFormat") final String dateFormat) throws ParseException {
     	
     	if(StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate) || StringUtils.isEmpty(dateFormat))
